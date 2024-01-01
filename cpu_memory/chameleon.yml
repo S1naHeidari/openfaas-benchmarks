@@ -1,0 +1,14 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+functions:
+  chameleon:
+    lang: python3
+    handler: ./chameleon
+    image: raycatcher/chameleon
+    environment:
+      read_timeout: 3600s
+      write_timeout: 3600s
+      upstream_timeout: 3600s
+      exec_timeout: 3600s
