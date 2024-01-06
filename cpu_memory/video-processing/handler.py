@@ -3,23 +3,26 @@ import uuid
 from time import time
 import cv2
 from botocore.client import Config
+import json
+import os
+
+s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
+                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
+                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
+                   config=Config(signature_version='s3v4'))
 
 
-s3_client = boto3.client('s3', endpoint_url='<VIDEO_PROCESSING_S3_ENDPOINT>',
-                   aws_access_key_id='<VIDEO_PROCESSING_S3_ACCESS_KEY>',
-                   aws_secret_access_key='<VIDEO_PROCESSING_S3_SECRET_KEY>',
-                   config=Config(signature_version='s3v4'),
-                   region_name='<VIDEO_PROCESSING_S3_REGION_NAME>')
 
-
-tmp = "/tmp/"
+tmp = "/tmp/vids/"
+if not os.path.exists(tmp):
+    os.makedirs(tmp)
 FILE_NAME_INDEX = 0
 FILE_PATH_INDEX = 2
 
 
 def video_processing(object_key, video_path):
     file_name = object_key.split(".")[FILE_NAME_INDEX]
-    result_file_path = tmp+file_name+f'-output-{str(uuid.uuid4())}.avi'
+    result_file_path = tmp+f'-output-{str(uuid.uuid4())}.avi'
 
     video = cv2.VideoCapture(video_path)
 
@@ -49,15 +52,19 @@ def video_processing(object_key, video_path):
     return latency, result_file_path
 
 
-def handle(event, context):
-    input_bucket = event.query['input_bucket']
-    object_key = event.query['object_key']
-    output_bucket = event.query['output_bucket']
+def handle(data):
+    request_json = json.loads(data)
 
-    start_time = float(event.query['start_time'])
-    request_uuid = event.query['uuid']
+    #input_bucket = 'picturesinput'
+    #object_key = 'input/input_sina.jpg'
+    input_bucket = request_json["input_bucket"]
+    object_key = request_json['object_key']
+    output_bucket = request_json['output_bucket']
+    request_uuid = request_json['uuid']
+    start_time = time()
 
-    download_path = tmp+'{}{}'.format(uuid.uuid4(), object_key)
+    download_path = tmp+ '/{}'.format(uuid.uuid4())
+    #download_path = tmp+'{}{}'.format(uuid.uuid4(), object_key)
 
     s3_client.download_file(input_bucket, object_key, download_path)
 
@@ -74,3 +81,5 @@ def handle(event, context):
             'test_name': 'video-processing'
         }
     }
+
+#print(handle('{"input_bucket": "vidsbucket", "object_key": "input/input.mp4", "output_bucket": "processedvids", "uuid": "1234"}'))

@@ -1,5 +1,7 @@
 import subprocess
 import uuid
+import json
+from time import time
 
 tmp = '/tmp'
 
@@ -19,13 +21,20 @@ Options
 """
 
 
-def handle(event, context):
-    bs = 'bs='+event.query['bs']
-    count = 'count='+event.query['count']
+def handle(data):
+    request_json = json.loads(data)
+    #print(request_json)
+    bs = 'bs='+request_json["bs"]
+    count = 'count='+request_json["count"]
+    start_time = time()
+    request_uuid = request_json["uuid"]
+
+    #bs = 'bs='+event.query['bs']
+    #count = 'count='+event.query['count']
     identifier = str(uuid.uuid4())
 
-    start_time = float(event.query['start_time'])
-    request_uuid = event.query['uuid']
+    #start_time = float(event.query['start_time'])
+    #request_uuid = event.query['uuid']
 
     result = -1
     out_fd = open(tmp + f'/io_write_logs-{identifier}', 'w')
@@ -43,8 +52,8 @@ def handle(event, context):
             'start_time': start_time,
             'uuid': request_uuid,
             'test_name': 'dd',
-            'bs': event.query['bs'],
-            'count': event.query['count']
+            'bs': request_json["bs"],
+            'count': request_json["count"]
         }
         }
 
@@ -52,3 +61,5 @@ def handle(event, context):
         "statusCode": 500,
         "body": f'{result}'
     }
+
+#print(handle('{"bs": "1024", "count": "5", "uuid": "1234"}'))

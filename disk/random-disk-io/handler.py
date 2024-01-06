@@ -5,13 +5,18 @@ import random
 import json
 import uuid
 
-def handle(event, context):
+def handle(data):
+    request_json = json.loads(data)
 
+    file_size = request_json["file_size"]
+    byte_size = request_json['byte_size']
+    request_uuid = request_json['uuid']
+    start_time = time()
 
-    file_size = int(event.query['file_size'])
-    byte_size = int(event.query['byte_size'])
-    start_time = float(event.query['start_time'])
-    request_uuid = event.query['uuid']
+    #file_size = int(event.query['file_size'])
+    #byte_size = int(event.query['byte_size'])
+    #start_time = float(event.query['start_time'])
+    #request_uuid = event.query['uuid']
 
     identifier = uuid.uuid4()
 
@@ -58,4 +63,4 @@ def handle(event, context):
     }
     }
 
-
+#print(handle('{"file_size": 100, "byte_size": 10, "uuid": "1234"}'))

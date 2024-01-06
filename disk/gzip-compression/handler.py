@@ -3,11 +3,19 @@ import gzip
 import os
 import json
 import uuid
+import json
 
-def handle(event, context):
-    file_size = int(event.query['file_size'])
-    start_time = float(event.query['start_time'])
-    request_uuid = event.query['uuid']
+def handle(data):
+    request_json = json.loads(data)
+
+    file_size = request_json["file_size"]
+    request_uuid = request_json['uuid']
+    start_time = time()
+    
+    
+    #file_size = int(event.query['file_size'])
+    #start_time = float(event.query['start_time'])
+    #request_uuid = event.query['uuid']
 
     file_write_path = f'/tmp/file-{str(uuid.uuid4())}'
 
@@ -35,3 +43,4 @@ def handle(event, context):
         }
     }
 
+#print(handle('{"file_size": 100, "uuid":"1234"}'))
