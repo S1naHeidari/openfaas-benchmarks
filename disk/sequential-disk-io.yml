@@ -1,14 +1,12 @@
 version: 1.0
 provider:
   name: openfaas
-  gateway: <OPENFAAS_GATEWAY>
+  gateway: http://127.0.0.1:8080
 functions:
   sequential-disk-io:
-    lang: python3-http-debian
+    lang: python3-debian
     handler: ./sequential-disk-io
-    image: <SEQUENTIAL_DISK_IO_DOCKER_IMAGE>
-    annotations:
-      com.openfaas.profile: function-anti-affinity
+    image: 192.168.56.11:5000/sequential_disk_io
     environment:
       read_timeout: 21600s
       write_timeout: 21600s
