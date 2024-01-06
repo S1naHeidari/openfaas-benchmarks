@@ -8,8 +8,8 @@ import json
 import os
 
 s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
-                   aws_access_key_id='H0eiqZBEeNxfo4A8xOfM',
-                   aws_secret_access_key='QcZkFH8u4jSjKZleAoXPsO0ngReCnOwTntQTkxJ2',
+                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
+                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
                    config=Config(signature_version='s3v4'))
 
 
