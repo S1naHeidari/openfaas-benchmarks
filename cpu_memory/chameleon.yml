@@ -7,6 +7,16 @@ functions:
     lang: python3
     handler: ./chameleon
     image: raycatcher/chameleon
+    requests:
+      cpu: 200m
+      memory: 64Mi
+    limits:
+      cpu: 350m
+      memory: 128Mi
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 5
+      function_name: chameleon
     environment:
       read_timeout: 3600s
       write_timeout: 3600s

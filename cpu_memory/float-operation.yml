@@ -6,11 +6,18 @@ functions:
   float-operation:
     lang: python3
     handler: ./float-operation
-    image: raycatcher/float-operation
+    image: 192.168.56.11:5000/float-operation
     requests:
+      cpu: 200m
+      memory: 64Mi
+    limits:
       cpu: 350m
+      memory: 128Mi
     environment:
       read_timeout: 3600s
       write_timeout: 3600s
       upstream_timeout: 3600s
       exec_timeout: 3600s
+    labels:
+      com.openfaas.scale.min: 2
+      com.openfaas.scale.max: 5

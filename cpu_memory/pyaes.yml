@@ -7,6 +7,15 @@ functions:
     lang: python3
     handler: ./pyaes
     image: 192.168.56.11:5000/pyaes
+    requests:
+      cpu: 200m
+      memory: 64Mi
+    limits:
+      cpu: 350m
+      memory: 128Mi
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 5
     environment:
       read_timeout: 3600s
       write_timeout: 3600s
