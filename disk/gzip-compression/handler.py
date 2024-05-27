@@ -43,4 +43,4 @@ def handle(data):
         }
     }
 
-#print(handle('{"file_size": 100, "uuid":"1234"}'))
+print(handle('{"file_size": 10, "uuid":"1234"}'))

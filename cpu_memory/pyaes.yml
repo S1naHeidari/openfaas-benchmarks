@@ -4,18 +4,18 @@ provider:
   gateway: http://127.0.0.1:8080
 functions:
   pyaes:
-    lang: python3
+    lang: python3-flask
     handler: ./pyaes
-    image: 192.168.56.11:5000/pyaes
+    image: 192.168.56.10:5000/pyaes
     requests:
       cpu: 200m
       memory: 64Mi
-    limits:
-      cpu: 350m
-      memory: 128Mi
+      #limits:
+      #cpu: 350m
+      #memory: 128Mi
     labels:
       com.openfaas.scale.min: 1
-      com.openfaas.scale.max: 5
+      com.openfaas.scale.max: 1
     environment:
       read_timeout: 3600s
       write_timeout: 3600s

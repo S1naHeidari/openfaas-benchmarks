@@ -4,9 +4,9 @@ provider:
   gateway: http://127.0.0.1:8080
 functions:
   s3-download-speed:
-    lang: python3-debian
+    lang: python3-flask
     handler: ./s3-download-speed
-    image: 192.168.56.11:5000/s3_download_speed
+    image: 192.168.56.10:5000/s3_download_speed
     environment:
       read_timeout: 21600s
       write_timeout: 21600s

@@ -1,3 +1,6 @@
+import warnings
+# Ignore PythonDeprecationWarning
+#warnings.filterwarnings("ignore", category=DeprecationWarning)
 import boto3
 import uuid
 from time import time
@@ -7,10 +10,14 @@ from PIL import Image, ImageFilter
 import json
 import os
 
-s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
-                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
-                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
-                   config=Config(signature_version='s3v4'))
+
+#import warnings
+
+
+#s3_client = boto3.client('s3', endpoint_url='http://192.168.56.10:32390',
+#                   aws_access_key_id='hGuPvYhOD2vzVAGEC4Us',
+#                   aws_secret_access_key='mtUQrnx9O9wCjbNLBU68ul0TmTBJREncqQY8Kf2b',
+#                   config=Config(signature_version='s3v4'))
 
 
 FILE_NAME_INDEX = 2
@@ -99,14 +106,14 @@ def image_processing(file_name, image_path):
     start = time()
     with Image.open(image_path) as image:
         tmp = image
-        path_list += flip(image, file_name)
-        path_list += rotate(image, file_name)
-        path_list += filter(image, file_name)
-        path_list += gray_scale(image, file_name)
+        #path_list += flip(image, file_name)
+        #path_list += rotate(image, file_name)
+        #path_list += filter(image, file_name)
+        #path_list += gray_scale(image, file_name)
         path_list += resize(image, file_name)
 
-    latency = time() - start
-    return latency, path_list
+    #latency = time() - start
+    return path_list
 
 
 def handle(data):
@@ -117,26 +124,24 @@ def handle(data):
     input_bucket = request_json["input_bucket"]
     object_key = request_json['object_key']
     output_bucket = request_json['output_bucket']
+    key_id = request_json['key_id']
+    access_key = request_json['access_key']
     request_uuid = request_json['uuid']
     start_time = time()
 
-    #input_bucket = event.query['input_bucket']
-    #object_key = event.query['object_key']
-    #output_bucket = event.query['output_bucket']
-    #start_time = float(event.query['start_time'])
-    #request_uuid = event.query['uuid']
+    s3_client = boto3.client('s3', endpoint_url='http://192.168.56.1:9000',
+                   aws_access_key_id=key_id,
+                   aws_secret_access_key=access_key,
+                   config=Config(signature_version='s3v4'))
+
     download_path = '/tmp/pics/{}.jpg'.format(uuid.uuid4())
-    #download_path = '/tmp/{}'.format(uuid.uuid4())
-    # if not os.path.exists(download_path):
-    #     os.makedirs(download_path)
+
 
     s3_client.download_file(input_bucket, object_key, download_path)
 
-    latency, path_list = image_processing(object_key, download_path)
-
-    for upload_path in path_list:
-        s3_client.upload_file(upload_path, output_bucket, upload_path.split("/")[FILE_NAME_INDEX])
-
+    path_list = image_processing(object_key, download_path)
+    
+    latency = time() - start_time
     return {
         "statusCode": 200,
         "body": {
@@ -148,4 +153,4 @@ def handle(data):
     }
 
 
-#print(handle('{"input_bucket": "picturesinput", "object_key": "input/input_sina.jpg", "output_bucket": "processedimages", "uuid": "1234"}'))
+#print(handle('{"input_bucket": "picturesinput", "object_key": "input/input_sina.jpg", "output_bucket": "processedimages", "key_id": "cu7oaEMkZhQ6WXmouxYY", "access_key": "WmzOQrLaL6bwzlxJ5BZ8eU3twCLioqTGX6YgxQcx", "uuid": "1234"}'))

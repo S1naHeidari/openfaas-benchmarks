@@ -4,9 +4,9 @@ import json
 from botocore.client import Config
 import uuid
 
-s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
-                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
-                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
+s3_client = boto3.client('s3', endpoint_url='http://192.168.56.10:32390',
+                   aws_access_key_id='hGuPvYhOD2vzVAGEC4Us',
+                   aws_secret_access_key='mtUQrnx9O9wCjbNLBU68ul0TmTBJREncqQY8Kf2b',
                    config=Config(signature_version='s3v4'))
 
 def handle(data):
@@ -49,4 +49,4 @@ def handle(data):
             }
     }
 
-#print(handle('{"input_bucket": "vidsbucket", "object_key": "input/input.mp4", "output_bucket": "processedvids", "uuid": "1234"}'))
+#print(handle('{"input_bucket": "vidsbucket", "object_key": "input/v-3.mp4", "output_bucket": "downloadedvids", "uuid": "1234"}'))

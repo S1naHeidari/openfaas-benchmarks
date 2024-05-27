@@ -4,19 +4,19 @@ provider:
   gateway: http://127.0.0.1:8080
 functions:
   chameleon:
-    lang: python3
+    lang: python3-flask
     handler: ./chameleon
-    image: raycatcher/chameleon
+    image: 192.168.56.10:5000/chameleon
     requests:
       cpu: 200m
       memory: 64Mi
-    limits:
-      cpu: 350m
-      memory: 128Mi
+      #limits:
+      #cpu: 350m
+      #  memory: 128Mi
     labels:
       com.openfaas.scale.min: 1
-      com.openfaas.scale.max: 5
-      function_name: chameleon
+      com.openfaas.scale.max: 1
+      #function_name: chameleon
     environment:
       read_timeout: 3600s
       write_timeout: 3600s

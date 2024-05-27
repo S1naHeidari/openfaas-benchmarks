@@ -6,7 +6,7 @@ functions:
   dd:
     lang: python3-debian
     handler: ./dd
-    image: 192.168.56.11:5000/dd
+    image: 192.168.56.10:5000/dd
     environment:
       read_timeout: 21600s
       write_timeout: 21600s

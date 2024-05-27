@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gzip
+  namespace: openfaas-fn
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gzip
+  template:
+    metadata:
+      labels:
+        app: gzip
+    spec:
+      containers:
+      - name: gzip
+        image: 192.168.56.10:5000/gzip
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "400m"
+            memory: "200Mi"
+      schedulerName: rl-scheduler
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: gzip-external
+  namespace: openfaas-fn
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: gzip

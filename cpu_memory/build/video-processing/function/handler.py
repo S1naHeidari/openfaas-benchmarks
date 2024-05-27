@@ -5,13 +5,12 @@ import cv2
 from botocore.client import Config
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 
-s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
-                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
-                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
+s3_client = boto3.client('s3', endpoint_url='http://192.168.56.10:32390',
+                   aws_access_key_id='hGuPvYhOD2vzVAGEC4Us',
+                   aws_secret_access_key='mtUQrnx9O9wCjbNLBU68ul0TmTBJREncqQY8Kf2b',
                    config=Config(signature_version='s3v4'))
-
-
 
 tmp = "/tmp/vids/"
 if not os.path.exists(tmp):
@@ -19,10 +18,14 @@ if not os.path.exists(tmp):
 FILE_NAME_INDEX = 0
 FILE_PATH_INDEX = 2
 
+def process_frame(frame):
+    return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
 def video_processing(object_key, video_path):
     file_name = object_key.split(".")[FILE_NAME_INDEX]
-    result_file_path = tmp+f'-output-{str(uuid.uuid4())}.avi'
+    output_file_name = f'{str(uuid.uuid4())}.avi'  # Unique output filename using UUID
+
+    result_file_path = os.path.join(tmp, output_file_name)
 
     video = cv2.VideoCapture(video_path)
 
@@ -30,47 +33,46 @@ def video_processing(object_key, video_path):
     height = int(video.get(4))
 
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter(result_file_path, fourcc, 20.0, (width, height))
+    out = cv2.VideoWriter(result_file_path, fourcc, 20.0, (width, height), isColor=False)  # Specify isColor=False for grayscale output
 
     start = time()
-    while video.isOpened():
-        ret, frame = video.read()
-
-        if ret:
-            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            tmp_file_path = tmp+'tmp.jpg'
-            cv2.imwrite(tmp_file_path, gray_frame)
-            gray_frame = cv2.imread(tmp_file_path)
+    with ThreadPoolExecutor() as executor:
+        futures = []
+        while video.isOpened():
+            ret, frame = video.read()
+            if ret:
+                futures.append(executor.submit(process_frame, frame))
+            else:
+                break
+        for future in futures:
+            gray_frame = future.result()
             out.write(gray_frame)
-        else:
-            break
-
-    latency = time() - start
-
+    
+    # Release the video capture and writer objects
     video.release()
     out.release()
-    return latency, result_file_path
+    
+    latency = time() - start
 
+    return latency, result_file_path
 
 def handle(data):
     request_json = json.loads(data)
-
-    #input_bucket = 'picturesinput'
-    #object_key = 'input/input_sina.jpg'
     input_bucket = request_json["input_bucket"]
     object_key = request_json['object_key']
     output_bucket = request_json['output_bucket']
     request_uuid = request_json['uuid']
     start_time = time()
 
-    download_path = tmp+ '/{}'.format(uuid.uuid4())
-    #download_path = tmp+'{}{}'.format(uuid.uuid4(), object_key)
-
+    download_path = os.path.join(tmp, str(uuid.uuid4()))
     s3_client.download_file(input_bucket, object_key, download_path)
 
     latency, upload_path = video_processing(object_key, download_path)
 
-    s3_client.upload_file(upload_path, output_bucket, upload_path.split("/")[FILE_PATH_INDEX])
+    upload_filename = upload_path.split("/")[-1]  # Extract filename from the path
+    unique_filename = f'{str(uuid.uuid4())}-{upload_filename}'  # Add UUID prefix to the filename
+
+    s3_client.upload_file(upload_path, output_bucket, unique_filename)  # Upload with the unique filename
 
     return {
         "statusCode": 200,
@@ -82,4 +84,4 @@ def handle(data):
         }
     }
 
-#print(handle('{"input_bucket": "vidsbucket", "object_key": "input/input.mp4", "output_bucket": "processedvids", "uuid": "1234"}'))
+#print(handle('{"input_bucket": "vidsbucket", "object_key": "input/v-1.mp4", "output_bucket": "processedvids", "uuid": "1234"}'))

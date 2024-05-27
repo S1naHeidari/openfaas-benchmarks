@@ -1,0 +1,12 @@
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  pigo-face-detector:
+    lang: go
+    handler: ./pigo-openfaas
+    image: 192.168.56.10:5000/facedetect
+    environment:
+      input_mode: "url"
+      output_mode: "image"

@@ -9,9 +9,9 @@ import re
 import io
 import json
 
-s3_client = boto3.client('s3', endpoint_url='http://192.168.56.11:30158',
-                   aws_access_key_id='oC59DZmk0v0DLN318m2a',
-                   aws_secret_access_key='3kzBqrXyMUzY4cat4J1CbZXgFqs7iRZUcVGyMyIa',
+s3_client = boto3.client('s3', endpoint_url='http://192.168.56.10:32390',
+                   aws_access_key_id='hGuPvYhOD2vzVAGEC4Us',
+                   aws_secret_access_key='mtUQrnx9O9wCjbNLBU68ul0TmTBJREncqQY8Kf2b',
                    config=Config(signature_version='s3v4'))
 
 cleanup_re = re.compile('[^a-z]+')
@@ -70,4 +70,4 @@ def handle(data):
         }
     }
 
-#print(handle('{"dataset_bucket": "datasetbucket", "dataset_object_key": "Reviews.csv", "model_bucket": "modelbucket", "model_object_key": "model_first", "uuid": "1234"}'))
+#print(handle('{"dataset_bucket": "datasetbucket", "dataset_object_key": "reviews.csv", "model_bucket": "modelbucket", "model_object_key": "model_first", "uuid": "1234"}'))

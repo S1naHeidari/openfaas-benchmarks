@@ -1,0 +1,19 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  facedetect:
+    lang: go-opencv
+    handler: ./facedetect
+    image: 192.168.56.10:5000/facedetect
+    requests:
+      cpu: 200m
+      memory: 64Mi
+    labels:
+      com.openfaas.scale.min: 1
+      com.openfaas.scale.max: 1
+    environment:
+      output_mode: "image"
+      input_mode: "url"

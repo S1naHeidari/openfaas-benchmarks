@@ -6,7 +6,7 @@ functions:
   gzip-compression:
     lang: python3-debian
     handler: ./gzip-compression
-    image: 192.168.56.11:5000/gzip_compression
+    image: 192.168.56.10:5000/gzip_compression
     environment:
       read_timeout: 21600s
       write_timeout: 21600s
